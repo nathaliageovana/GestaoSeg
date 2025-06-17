@@ -14,7 +14,6 @@
       height: 100vh;
     }
 
-    /* Menu lateral */
     .sidebar {
       width: 250px;
       background-color: #2d3748;
@@ -39,7 +38,6 @@
       background: #d69929;
     }
 
-    /* Conteúdo principal */
     .main-content {
       flex: 1;
       padding: 1rem;
@@ -109,7 +107,7 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
     }
@@ -276,7 +274,97 @@
       </button>
     </section>
 
-    <!-- Abas restantes... (mantenha as mesmas seções que já existem) -->
+    <!-- Alunos -->
+    <section id="alunos" class="card hidden">
+      <h2>Cadastro de Alunos</h2>
+      <input type="text" id="aluno-nome" placeholder="Nome do Aluno" />
+      <input type="text" id="aluno-cpf" placeholder="CPF" />
+      <input type="email" id="aluno-email" placeholder="Email" />
+      <button onclick="addAluno()">Cadastrar</button>
+      <table id="tabela-alunos" class="mt-4">
+        <thead><tr><th>Nome</th><th>CPF</th><th>Email</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Empresas -->
+    <section id="empresas" class="card hidden">
+      <h2>Cadastro de Empresas</h2>
+      <input type="text" id="empresa-razao" placeholder="Razão Social" />
+      <input type="text" id="empresa-cnpj" placeholder="CNPJ" />
+      <input type="text" id="empresa-endereco" placeholder="Endereço" />
+      <input type="text" id="empresa-cidade-uf" placeholder="Cidade/UF" />
+      <input type="text" id="empresa-telefone" placeholder="Telefone" />
+      <input type="email" id="empresa-email" placeholder="Email" />
+      <button onclick="addEmpresa()">Cadastrar</button>
+      <table id="tabela-empresas" class="mt-4">
+        <thead><tr><th>Razão Social</th><th>CNPJ</th><th>Cidade/UF</th><th>Telefone</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Treinamentos -->
+    <section id="treinamentos" class="card hidden">
+      <h2>Emitir Certificado</h2>
+      <select id="cert-treinamento" onchange="updateCertFields()"></select>
+      <select id="cert-aluno"></select>
+      <input type="date" id="cert-data" />
+      <input type="text" id="cert-instrutor" placeholder="Instrutor" />
+      <button onclick="emitirCertificado()">Emitir Certificado</button>
+    </section>
+
+    <!-- Diárias -->
+    <section id="diarias" class="card hidden">
+      <h2>Controle de Diárias</h2>
+      <select id="diaria-aluno"></select>
+      <select id="diaria-empresa"></select>
+      <input type="date" id="diaria-data" />
+      <input type="number" id="diaria-horas-extras" min="0" placeholder="Horas Extras" />
+      <button onclick="registrarDiaria()">Registrar Diária</button>
+      <table id="tabela-diarias" class="mt-4">
+        <thead><tr><th>Aluno</th><th>Empresa</th><th>Data</th><th>Horas Extras</th><th>Valor Total</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- NF - Diárias -->
+    <section id="nfs-diaria" class="card hidden">
+      <h2>Emitir NF - Diárias</h2>
+      <select id="nf-empresa"></select>
+      <input type="number" id="nf-dias" min="1" placeholder="Dias trabalhados" />
+      <input type="number" id="nf-horas" min="0" placeholder="Horas extras" />
+      <button onclick="emitirNFDiaria()">Emitir NF</button>
+      <div id="nf-diaria-result" class="mt-4"></div>
+    </section>
+
+    <!-- NF - Treinamentos -->
+    <section id="nfs-treinamento" class="card hidden">
+      <h2>Emitir NF - Treinamentos</h2>
+      <select id="nf-treinamento"></select>
+      <input type="number" id="nf-alunos" min="1" placeholder="Quantidade de Alunos" />
+      <input type="number" id="nf-valor-aluno" min="0" step="0.01" placeholder="Valor por aluno" />
+      <button onclick="emitirNFTreinamento()">Emitir NF</button>
+      <div id="nf-treinamento-result" class="mt-4"></div>
+    </section>
+
+    <!-- Desvios -->
+    <section id="desvios" class="card hidden">
+      <h2>Cadastrar Desvio</h2>
+      <select id="desvio-empresa"></select>
+      <input type="text" id="desvio-tipo" placeholder="Tipo do Desvio" />
+      <textarea id="desvio-descricao" rows="3" placeholder="Descrição do Desvio"></textarea>
+      <input type="date" id="desvio-data" value="" />
+      <select id="desvio-situacao">
+        <option value="Aberto">Aberto</option>
+        <option value="Em andamento">Em Andamento</option>
+        <option value="Resolvido">Resolvido</option>
+      </select>
+      <button onclick="registrarDesvio()">Registrar</button>
+      <table id="tabela-desvios" class="mt-4">
+        <thead><tr><th>Empresa</th><th>Tipo</th><th>Data</th><th>Situação</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
   </div>
 
@@ -300,8 +388,8 @@
     ];
 
     function showTab(tab) {
-      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-      document.getElementById(tab).classList.add("active");
+      document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(tab).classList.remove("hidden");
       if (tab === 'dashboard') updateDashboard();
     }
 
@@ -324,8 +412,8 @@
         tr.innerHTML = `<td>${a.nome}</td><td>${a.cpf}</td><td>${a.email || "-"}</td>`;
         tbody.appendChild(tr);
       });
-      populateSelect("cert-aluno", alunos);
-      populateSelect("diaria-aluno", alunos.map(a => a));
+      populateSelect("cert-aluno", alunos.map(a => a.nome));
+      populateSelect("diaria-aluno", alunos.map(a => a.nome));
       updateDashboard();
     }
 
@@ -337,30 +425,128 @@
         tr.innerHTML = `<td>${e.razao}</td><td>${e.cnpj}</td><td>${e.cidadeUf}</td><td>${e.telefone}</td>`;
         tbody.appendChild(tr);
       });
-      populateSelect("cert-empresa", empresas);
       populateSelect("nf-empresa", empresas.map(e => e.razao));
       populateSelect("desvio-empresa", empresas.map(e => e.razao));
       updateDashboard();
     }
 
-    function renderDesvios() {
-      const tbody = document.querySelector("#tabela-desvios tbody");
+    function addAluno() {
+      const nome = document.getElementById("aluno-nome").value;
+      const cpf = document.getElementById("aluno-cpf").value;
+      const email = document.getElementById("aluno-email").value;
+
+      if (!nome || !cpf) return alert("Preencha Nome e CPF");
+      alunos.push({ nome, cpf, email });
+      storage.set("alunos", alunos);
+      renderAlunos();
+      clearInputs(["aluno-nome", "aluno-cpf", "aluno-email"]);
+    }
+
+    function addEmpresa() {
+      const razao = document.getElementById("empresa-razao").value;
+      const cnpj = document.getElementById("empresa-cnpj").value;
+      const endereco = document.getElementById("empresa-endereco").value;
+      const cidadeUf = document.getElementById("empresa-cidade-uf").value;
+      const telefone = document.getElementById("empresa-telefone").value;
+      const email = document.getElementById("empresa-email").value;
+
+      if (!razao || !cnpj) return alert("Preencha Razão Social e CNPJ");
+      empresas.push({ razao, cnpj, endereco, cidadeUf, telefone, email });
+      storage.set("empresas", empresas);
+      renderEmpresas();
+      clearInputs(["empresa-razao", "empresa-cnpj", "empresa-endereco", "empresa-cidade-uf", "empresa-telefone", "empresa-email"]);
+    }
+
+    function registrarDesvio() {
+      const empresa = document.getElementById("desvio-empresa").value;
+      const tipo = document.getElementById("desvio-tipo").value;
+      const descricao = document.getElementById("desvio-descricao").value;
+      const data = document.getElementById("desvio-data").value;
+      const situacao = document.getElementById("desvio-situacao").value;
+
+      if (!empresa || !tipo || !descricao) return alert("Preencha todos os campos obrigatórios");
+      desvios.push({ empresa, tipo, descricao, data, situacao });
+      storage.set("desvios", desvios);
+      clearInputs(["desvio-tipo", "desvio-descricao", "desvio-data"]);
+      updateDashboard();
+    }
+
+    function emitirCertificado() {
+      const aluno = document.getElementById("cert-aluno").value;
+      const treinamento = document.getElementById("cert-treinamento").value;
+      const data = document.getElementById("cert-data").value;
+      const instrutor = document.getElementById("cert-instrutor").value;
+
+      if (!aluno || !treinamento || !data || !instrutor) return alert("Preencha todos os campos");
+      const content = `
+        <div class="print-section" id="cert-${Date.now()}">
+          <h1 style="text-align:center; color:#ed8936;">CERTIFICADO DE PARTICIPAÇÃO</h1>
+          <p style="text-align:center;">Certificamos que:</p>
+          <h2 style="text-align:center; margin: 2rem 0;">${aluno}</h2>
+          <p style="text-align:center;">Concluiu o treinamento:</p>
+          <h3 style="text-align:center; margin: 2rem 0;">${treinamento}</h3>
+          <p style="text-align:center;">Ministrado por: ${instrutor}</p>
+          <p style="text-align:center; margin-top: 1rem;">Data: ${new Date(data).toLocaleDateString()}</p>
+          <p style="margin-top: 4rem; text-align:right;">__________________________<br>Instrutor</p>
+        </div>
+      `;
+      document.getElementById("print-area").innerHTML = content;
+      window.print();
+    }
+
+    function emitirNFDiaria() {
+      const empresa = document.getElementById("nf-empresa").value;
+      const dias = parseInt(document.getElementById("nf-dias").value || 1);
+      const horas = parseInt(document.getElementById("nf-horas").value || 0);
+      const total = (430 * dias) + (horas * 50);
+      document.getElementById("nf-diaria-result").innerHTML = `
+        <p>Nota Fiscal para ${empresa} - ${dias} dia(s)</p>
+        <p>Horas extras: ${horas}</p>
+        <p><strong>Valor total: R$${total.toFixed(2)}</strong></p>
+      `;
+    }
+
+    function emitirNFTreinamento() {
+      const treinamento = document.getElementById("nf-treinamento").value;
+      const alunos = parseInt(document.getElementById("nf-alunos").value || 1);
+      const valorPorAluno = parseFloat(document.getElementById("nf-valor-aluno").value || 0);
+      const total = alunos * valorPorAluno;
+      document.getElementById("nf-treinamento-result").innerHTML = `
+        <p>Nota Fiscal para ${treinamento}</p>
+        <p>Quantidade de Alunos: ${alunos}</p>
+        <p><strong>Valor total: R$${total.toFixed(2)}</strong></p>
+      `;
+    }
+
+    function registrarDiaria() {
+      const aluno = document.getElementById("diaria-aluno").value;
+      const empresa = document.getElementById("diaria-empresa").value;
+      const data = document.getElementById("diaria-data").value;
+      const horasExtras = parseInt(document.getElementById("diaria-horas-extras").value || 0);
+      const valorTotal = 430 + (horasExtras * 50);
+
+      diarias.push({ aluno, empresa, data, horasExtras, valorTotal });
+      storage.set("diarias", diarias);
+      renderDiarias();
+      clearInputs(["diaria-data", "diaria-horas-extras"]);
+    }
+
+    function renderDiarias() {
+      const tbody = document.querySelector("#tabela-diarias tbody");
       tbody.innerHTML = "";
-      desvios.forEach(d => {
+      diarias.forEach(d => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${d.empresa}</td><td>${d.tipo}</td><td>${new Date(d.data).toLocaleDateString()}</td><td>${d.situacao}</td>`;
+        tr.innerHTML = `<td>${d.aluno}</td><td>${d.empresa}</td><td>${new Date(d.data).toLocaleDateString()}</td><td>${d.horasExtras}</td><td>R$${parseFloat(d.valorTotal).toFixed(2)}</td>`;
         tbody.appendChild(tr);
       });
     }
 
     function updateDashboard() {
-      // Indicadores
       document.getElementById("count-alunos").innerText = alunos.length;
       document.getElementById("count-empresas").innerText = empresas.length;
-      document.getElementById("count-certificados").innerText = 0; // Simulado
+      document.getElementById("count-certificados").innerText = 0;
       document.getElementById("total-faturamento").innerText = diarias.reduce((sum, d) => sum + (d.valorTotal || 0), 0).toFixed(2);
 
-      // Status dos Desvios
       const totalDesvios = desvios.length;
       const abertos = desvios.filter(d => d.situacao === "Aberto").length;
       const andamento = desvios.filter(d => d.situacao === "Em andamento").length;
@@ -432,12 +618,66 @@
       });
     }
 
+    function updateCertFields() {
+      const treinamentoSelect = document.getElementById("cert-treinamento");
+      const selected = treinamentos.find(t => t.nome === treinamentoSelect.value);
+      const printArea = document.getElementById("print-area");
+
+      if (!selected) return;
+
+      printArea.innerHTML = `
+        <div class="print-section" id="cert-template">
+          <h1 style="color:#ed8936; text-align:center;">CERTIFICADO DE PARTICIPAÇÃO</h1>
+          <p style="text-align:center;">Certificamos que:</p>
+          <h2 style="text-align:center; margin:2rem 0;" id="cert-nome-aluno"></h2>
+          <p style="text-align:center;">Participou do treinamento:</p>
+          <h3 style="text-align:center; margin:2rem 0;">${selected.nome}</h3>
+          <p style="text-align:center;">Ministrado por: <span id="cert-instrutor-print"></span></p>
+          <p style="text-align:center;">Data: <span id="cert-data-print"></span></p>
+          <p style="margin-top:4rem; text-align:right;">__________________________<br>Instrutor</p>
+        </div>
+      `;
+    }
+
+    function clearInputs(ids) {
+      ids.forEach(id => document.getElementById(id).value = "");
+    }
+
     function init() {
-      populateSelect("cert-treinamento", treinamentos);
+      populateSelect("cert-treinamento", treinamentos.map(t => t.nome));
       populateSelect("nf-treinamento", treinamentos.map(t => t.nome));
+      populateSelect("desvio-empresa", empresas.map(e => e.razao));
+      populateSelect("nf-empresa", empresas.map(e => e.razao));
       renderAlunos();
       renderEmpresas();
-      renderDesvios();
+      updateDashboard();
+    }
+
+    function renderAlunos() {
+      const tbody = document.querySelector("#tabela-alunos tbody");
+      tbody.innerHTML = "";
+      alunos.forEach(a => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${a.nome}</td><td>${a.cpf}</td><td>${a.email || "-"}</td>`;
+        tbody.appendChild(tr);
+      });
+      populateSelect("cert-aluno", alunos.map(a => a.nome));
+      populateSelect("diaria-aluno", alunos.map(a => a.nome));
+      updateDashboard();
+    }
+
+    function renderEmpresas() {
+      const tbody = document.querySelector("#tabela-empresas tbody");
+      tbody.innerHTML = "";
+      empresas.forEach(e => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${e.razao}</td><td>${e.cnpj}</td><td>${e.cidadeUf}</td><td>${e.telefone}</td>`;
+        tbody.appendChild(tr);
+      });
+      populateSelect("cert-empresa", empresas);
+      populateSelect("diaria-empresa", empresas.map(e => e.razao));
+      populateSelect("nf-empresa", empresas.map(e => e.razao));
+      populateSelect("desvio-empresa", empresas.map(e => e.razao));
       updateDashboard();
     }
 
@@ -446,3 +686,4 @@
 
 </body>
 </html>
+
